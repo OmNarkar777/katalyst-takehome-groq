@@ -5,8 +5,8 @@ import ErrorBox from '../components/ErrorBox';
 export default function Home(){
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState(null);
-  const [upcoming,setUpcoming]=useState([]);
-  const [past,setPast]=useState([]);
+  const [upcoming,setUpcoming]=useState<Meeting[]>([]);
+  const [past,setPast]=useState<Meeting[]>([]);
   const [summaryMap,setSummaryMap]=useState({});
   async function fetchMeetings(){ setLoading(true); setError(null); try{ const r=await fetch('/api/meetings'); if(!r.ok) throw new Error(await r.text()); const data=await r.json(); setUpcoming(data.upcoming||[]); setPast(data.past||[]); }catch(err: any){ setError(err.message||'Failed to fetch'); } finally{ setLoading(false);} }
   useEffect(()=>{ fetchMeetings(); },[]);
