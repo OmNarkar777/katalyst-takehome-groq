@@ -2,8 +2,8 @@ export async function fetchMeetingsForUser(userId: string) {
   const now = new Date();
 
   const upcoming = [...Array(5)].map((_, i) => ({
-    id: up-\,
-    title: Upcoming Meeting \,
+    id: `up-${i}`,
+    title: `Upcoming Meeting ${i + 1}`,
     start: now.toISOString(),
     end: new Date(now.getTime() + 45 * 60000).toISOString(),
     duration: 45,
@@ -16,10 +16,10 @@ export async function fetchMeetingsForUser(userId: string) {
   }));
 
   const past = [...Array(5)].map((_, i) => ({
-    id: past-\,
-    title: Past Meeting \,
-    start: new Date(now.getTime() - (i+1) * 86400000).toISOString(),
-    end: new Date(now.getTime() - (i+1) * 86400000 + 30 * 60000).toISOString(),
+    id: `past-${i}`,
+    title: `Past Meeting ${i + 1}`,
+    start: new Date(now.getTime() - (i + 1) * 86400000).toISOString(),
+    end: new Date(now.getTime() - (i + 1) * 86400000 + 30 * 60000).toISOString(),
     duration: 30,
     attendees: [
       { name: "John Doe", email: "john@example.com" },
