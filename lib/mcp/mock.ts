@@ -1,21 +1,33 @@
-import dayjs from 'dayjs';
-function mk(title: string, start: string, end: string, attendees: any[], description?: string, calendarId?: string) {
-  const duration = dayjs(end).diff(dayjs(start), 'minute');
-  return { id: `m-${title.replace(/\s+/g,'-')}`, title, start, end, duration, attendees, description: description || '', calendarId };
-}
-export function getMockMeetings() {
-  const now = dayjs();
-  const upcoming = [];
-  for (let i=1;i<=5;i++) {
-    const s = now.add(i, 'day').hour(10).minute(0).toISOString();
-    const e = now.add(i, 'day').hour(11).minute(0).toISOString();
-    upcoming.push(mk(`Upcoming Meeting ${i}`, s, e, [ { name: 'Alice', email: 'alice@example.com' }, { name: 'Bob', email: 'bob@example.com' } ], `Agenda for upcoming meeting ${i}`, 'primary'));
-  }
-  const past = [];
-  for (let i=1;i<=5;i++) {
-    const s = now.subtract(i, 'day').hour(9).minute(30).toISOString();
-    const e = now.subtract(i, 'day').hour(10).minute(15).toISOString();
-    past.push(mk(`Past Meeting ${i}`, s, e, [ { name: 'Carol', email: 'carol@example.com' }, { name: 'Dan', email: 'dan@example.com' } ], `Notes from past meeting ${i}`, 'primary'));
-  }
+export async function fetchMeetingsForUser(userId: string) {
+  const now = new Date();
+
+  const upcoming = [...Array(5)].map((_, i) => ({
+    id: up-\,
+    title: Upcoming Meeting \,
+    start: now.toISOString(),
+    end: new Date(now.getTime() + 45 * 60000).toISOString(),
+    duration: 45,
+    attendees: [
+      { name: "John Doe", email: "john@example.com" },
+      { name: "Jane Doe", email: "jane@example.com" }
+    ],
+    description: "Discussion about project updates",
+    calendarId: "mock-calendar"
+  }));
+
+  const past = [...Array(5)].map((_, i) => ({
+    id: past-\,
+    title: Past Meeting \,
+    start: new Date(now.getTime() - (i+1) * 86400000).toISOString(),
+    end: new Date(now.getTime() - (i+1) * 86400000 + 30 * 60000).toISOString(),
+    duration: 30,
+    attendees: [
+      { name: "John Doe", email: "john@example.com" },
+      { name: "Jane Doe", email: "jane@example.com" }
+    ],
+    description: "Summary of past meeting",
+    calendarId: "mock-calendar"
+  }));
+
   return { upcoming, past };
 }
