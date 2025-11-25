@@ -17,7 +17,7 @@ export default function Home(){
   const [error,setError]=useState(null);
   const [upcoming,setUpcoming]=useState<Meeting[]>([]);
   const [past,setPast]=useState<Meeting[]>([]);
-  const [summaryMap,setSummaryMap]=useState({});
+  const [summaryMap,setSummaryMap]=useState<Record<string, string>>({});
   async function fetchMeetings(){ setLoading(true); setError(null); try{ const r=await fetch('/api/meetings'); if(!r.ok) throw new Error(await r.text()); const data=await r.json(); setUpcoming(data.upcoming||[]); setPast(data.past||[]); }catch(err: any){ setError(err.message||'Failed to fetch'); } finally{ setLoading(false);} }
   useEffect(()=>{ fetchMeetings(); },[]);
   async function handleGenerateSummary(meeting: any){ try{ const resp=await fetch('/api/summarize',{ method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ meeting }) }); const data=await resp.json(); setSummaryMap(prev=>({ ...prev, [meeting.id]: data.summary })); }catch(err: any){ alert('Failed to generate summary'); } }
