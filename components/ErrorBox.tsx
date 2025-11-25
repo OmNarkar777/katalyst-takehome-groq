@@ -1,0 +1,1 @@
+export default function ErrorBox({ message, onRetry }: { message: string, onRetry: ()=>void }){ return (<div className="p-4 bg-red-50 border border-red-200 rounded"><div className="text-red-800 font-medium">Error</div><div className="text-sm mt-1">{message}</div><button onClick={onRetry} className="mt-3 px-3 py-1 bg-red-600 text-white rounded">Retry</button></div>); }
