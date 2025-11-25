@@ -1,3 +1,13 @@
+interface Meeting {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  duration: number;
+  attendees: any[];
+  description: string;
+  calendarId: string | null;
+}
 import { useEffect, useState } from 'react';
 import MeetingCard from '../components/MeetingCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -21,3 +31,4 @@ export default function Home(){
     </div>
   );
 }
+
