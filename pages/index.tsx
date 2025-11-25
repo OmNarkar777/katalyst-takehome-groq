@@ -10,7 +10,7 @@ export default function Home(){
   const [summaryMap,setSummaryMap]=useState({});
   async function fetchMeetings(){ setLoading(true); setError(null); try{ const r=await fetch('/api/meetings'); if(!r.ok) throw new Error(await r.text()); const data=await r.json(); setUpcoming(data.upcoming||[]); setPast(data.past||[]); }catch(err: any){ setError(err.message||'Failed to fetch'); } finally{ setLoading(false);} }
   useEffect(()=>{ fetchMeetings(); },[]);
-  async function handleGenerateSummary(meeting){ try{ const resp=await fetch('/api/summarize',{ method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ meeting }) }); const data=await resp.json(); setSummaryMap(prev=>({ ...prev, [meeting.id]: data.summary })); }catch(err: any){ alert('Failed to generate summary'); } }
+  async function handleGenerateSummary(meeting: any){ try{ const resp=await fetch('/api/summarize',{ method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ meeting }) }); const data=await resp.json(); setSummaryMap(prev=>({ ...prev, [meeting.id]: data.summary })); }catch(err: any){ alert('Failed to generate summary'); } }
   return (
     <div className="max-w-4xl mx-auto p-6">
       <header className="mb-6"><h1 className="text-2xl font-bold">Katalyst — Meetings (MCP + Groq)</h1><p className="text-sm text-gray-600">This demo uses an MCP adapter layer (mock by default) and Groq LLM for summaries. Set GROQ_API_KEY in .env.local to enable real summaries.</p></header>
