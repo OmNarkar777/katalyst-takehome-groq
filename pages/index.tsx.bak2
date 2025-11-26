@@ -21,51 +21,53 @@ export default function Home(){
   async function fetchMeetings(){ setLoading(true); setError(null); try{ const r=await fetch('/api/meetings'); if(!r.ok) throw new Error(await r.text()); const data=await r.json(); setUpcoming(data.upcoming||[]); setPast(data.past||[]); }catch(err: any){ setError(err.message||'Failed to fetch'); } finally{ setLoading(false);} }
   useEffect(()=>{ fetchMeetings(); },[]);
   async function handleGenerateSummary(meeting: Meeting) {
-  // Optimistic UI
+  // Optimistic UI: show a "Generating..." message per meeting
   setSummaryMap(prev => ({ ...prev, [meeting.id]: "Generating summary..." }));
 
   try {
-    // Build a transcript: prefer description, otherwise a small mock
+    // If the meeting has a description, use it as the transcript.
+    // Otherwise create a short mock transcript so the summarizer has content.
     const transcript =
       meeting.description && meeting.description.trim().length > 10
         ? meeting.description
         : `Mock transcript for "${meeting.title}" — duration: ${meeting.duration} minutes. Attendees: ${meeting.attendees?.length || 0}.`;
 
-    // Call app summarize API
-    const r = await fetch("/api/summarize", {
+    // call the summarize API
+    const res = await fetch("/api/summarize", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ meetingId: meeting.id, transcript })
     });
 
-    if (!r.ok) {
-      const txt = await r.text().catch(() => "");
-      throw new Error("Summarize failed: " + (txt || r.statusText));
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      throw new Error("Summarize API failed: " + (txt || res.statusText));
     }
 
-    const data = await r.json();
+    const data = await res.json();
     const summary = (data && (data.summary || data.text || data.result)) || "No summary returned";
 
-    // Persist to logs endpoint (best-effort)
-    try {
-      await fetch("/api/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: summary, meetingId: meeting.id })
-      });
-    } catch (e) {
-      console.warn("Failed to persist log:", e);
+    // store summary into logs (server route inserts into Supabase)
+    const store = await fetch("/api/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: summary, meetingId: meeting.id })
+    });
+
+    if (!store.ok) {
+      // warn but still show summary locally
+      console.warn("Failed to persist log:", await store.text().catch(() => store.statusText));
     }
 
-    // update UI
+    // update UI state to show final summary
     setSummaryMap(prev => ({ ...prev, [meeting.id]: summary }));
   } catch (err: any) {
     console.error("handleGenerateSummary error:", err);
     setError(err?.message || "Failed to generate summary");
     setSummaryMap(prev => ({ ...prev, [meeting.id]: "Failed to generate summary" }));
   }
-}
-return (
+}, body:JSON.stringify({ meeting }) }); const data=await resp.json(); setSummaryMap(prev=>({ ...prev, [meeting.id]: data.summary })); }catch(err: any){ alert('Failed to generate summary'); } }
+  return (
     <div className="max-w-4xl mx-auto p-6">
       <header className="mb-6"><h1 className="text-2xl font-bold">Katalyst â€” Meetings (MCP + Groq)</h1><p className="text-sm text-gray-600">This demo uses an MCP adapter layer (mock by default) and Groq LLM for summaries. Set GROQ_API_KEY in .env.local to enable real summaries.</p></header>
       {loading && <LoadingSkeleton />}
@@ -75,6 +77,5 @@ return (
     </div>
   );
 }
-
 
 
